@@ -36,7 +36,7 @@ export function DashboardSidebar({ user, plan = "Pro" }: DashboardSidebarProps) 
                 <Link href={DASHBOARD_ROUTES.overview}>
                   <span className="flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-none bg-sidebar">
                     <Image
-                      src="/dashboard-logo.svg"
+                      src="/reviewpilot-ai-dashboard.svg"
                       alt=""
                       width={62}
                       height={62}

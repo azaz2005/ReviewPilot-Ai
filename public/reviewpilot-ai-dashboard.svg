@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">ReviewPilot AI — AI Circuit Icon</title>
+  <desc id="desc">A modern blue and violet circuit-board mark surrounding an AI processor, designed for ReviewPilot AI.</desc>
+  <defs>
+    <linearGradient id="g" x1="72" y1="60" x2="438" y2="452" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#42D7FF"/>
+      <stop offset=".52" stop-color="#477BFF"/>
+      <stop offset="1" stop-color="#A66BFF"/>
+    </linearGradient>
+    <linearGradient id="core" x1="176" y1="156" x2="340" y2="354" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#182D5B"/>
+      <stop offset="1" stop-color="#10172F"/>
+    </linearGradient>
+    <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="8" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <g fill="none" stroke="url(#g)" stroke-width="13" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M184 104H142a38 38 0 0 0-38 38v42"/>
+    <path d="M328 104h42a38 38 0 0 1 38 38v42"/>
+    <path d="M104 328v42a38 38 0 0 0 38 38h42"/>
+    <path d="M408 328v42a38 38 0 0 1-38 38h-42"/>
+    <path d="M104 220H65m343 0h39M220 104V65m72 343v39"/>
+    <path d="M150 256H91m271 0h59M256 150V91m0 271v59"/>
+  </g>
+  <g fill="url(#g)">
+    <circle cx="65" cy="220" r="11"/><circle cx="447" cy="220" r="11"/>
+    <circle cx="220" cy="65" r="11"/><circle cx="292" cy="447" r="11"/>
+    <circle cx="184" cy="104" r="8"/><circle cx="328" cy="104" r="8"/>
+    <circle cx="184" cy="408" r="8"/><circle cx="328" cy="408" r="8"/>
+  </g>
+  <rect x="151" y="151" width="210" height="210" rx="48" fill="url(#core)" stroke="url(#g)" stroke-width="12"/>
+  <g filter="url(#glow)" fill="none" stroke="url(#g)" stroke-width="13" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M221 214l-35 42 35 42"/>
+    <path d="M291 214l35 42-35 42"/>
+    <path d="M273 201l-34 110"/>
+  </g>
+  <path d="M210 335h92" stroke="#42D7FF" stroke-width="7" stroke-linecap="round" opacity=".85"/>
+</svg>
