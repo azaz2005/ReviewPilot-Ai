@@ -78,7 +78,11 @@ export async function POST(request: Request) {
     ? new Date(subscription.current_end * 1000)
     : null;
 
-  if (event.event === "subscription.activated") {
+
+  if (
+    event.event === "subscription.activated" ||
+    event.event === "subscription.charged"
+  ) {
     await prisma.user.update({
       where: { id: userId },
       data: {
@@ -88,7 +92,13 @@ export async function POST(request: Request) {
         subscriptionRenewsAt: renewsAt,
       },
     });
+
+    console.log(
+      "Razorpay: Pro plan activated successfully for user:",
+      userId
+    );
   }
+
 
   if (event.event === "subscription.charged") {
     await prisma.user.update({

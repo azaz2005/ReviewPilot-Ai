@@ -11,7 +11,22 @@ import { statusButtonClass } from "@/features/dashboard/lib/status-style";
 import { cn } from "@/lib/utils";
 import { startProSubscription } from "@/lib/billing";
 
-type RazorpayCheckout = new (options: Record<string, unknown>) => {
+type RazorpaySuccessResponse = {
+  razorpay_payment_id: string;
+  razorpay_subscription_id: string;
+  razorpay_signature: string;
+};
+
+type RazorpayCheckout = new (options: {
+  key: string;
+  subscription_id: string;
+  name: string;
+  description: string;
+  handler: (response: RazorpaySuccessResponse) => Promise<void>;
+  modal?: {
+    ondismiss?: () => void;
+  };
+}) => {
   open: () => void;
 };
 
@@ -51,23 +66,31 @@ export function UpgradeButton() {
         subscription_id: subscriptionId,
         name: "ReviewPilot AI",
         description: "Pro plan - unlimited AI reviews",
-        handler: () => {
+
+        handler: async (_response) => {
           toast.success(
-            "Payment successful! Your Pro plan will activate shortly.",
+            "Payment successful! Your Pro plan will activate shortly."
           );
+
           router.refresh();
+          setLoading(false);
+        },
+
+        modal: {
+          ondismiss: () => {
+            setLoading(false);
+          },
         },
       });
 
       checkout.open();
     } catch (error) {
-      const message =
+      toast.error(
         error instanceof Error
           ? error.message
-          : "Could not start checkout.";
+          : "Could not start checkout."
+      );
 
-      toast.error(message);
-    } finally {
       setLoading(false);
     }
   }

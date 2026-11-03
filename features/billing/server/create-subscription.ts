@@ -1,11 +1,3 @@
-/**
- * Creates a Razorpay subscription before the user opens checkout.
- *
- * Flow: server creates subscription → returns id → client opens Razorpay Checkout
- * with that `subscription_id` → Razorpay webhook activates Pro after payment.
- *
- * @module features/billing/server/create-subscription
- */
 
 import "server-only";
 
@@ -13,14 +5,6 @@ import { getRazorpay } from "@/features/billing/lib/razorpay";
 import { getUserSubscription } from "@/features/billing/server/subscription";
 import { prisma } from "@/lib/db";
 
-/**
- * Starts the Pro upgrade by creating a Razorpay subscription on the server.
- *
- * @param userId - The logged-in user who is upgrading; stored in Razorpay `notes`
- *   so webhooks can link payment back to this account.
- * @returns `{ subscriptionId }` passed to Razorpay Checkout on the client.
- * @throws If the user already has active Pro or `RAZORPAY_PLAN_ID` is missing.
- */
 export async function createProSubscription(userId: string) {
   const subscription = await getUserSubscription(userId);
 
@@ -28,13 +12,32 @@ export async function createProSubscription(userId: string) {
     throw new Error("You already have an active Pro subscription.");
   }
 
+  // Reuse an existing pending subscription to avoid creating duplicates.
+  const existingUser = await prisma.user.findUnique({
+    where: { id: userId },
+    select: {
+      razorpaySubscriptionId: true,
+      subscriptionStatus: true,
+    },
+  });
+
+  if (
+    existingUser?.subscriptionStatus === "pending" &&
+    existingUser.razorpaySubscriptionId
+  ) {
+    return {
+      subscriptionId: existingUser.razorpaySubscriptionId,
+    };
+  }
+
   const planId = process.env.RAZORPAY_PLAN_ID;
+
   if (!planId) {
     throw new Error("Razorpay plan is not configured.");
   }
 
   const razorpay = getRazorpay();
-  // `notes.userId` helps the webhook find our user if lookup by subscription id fails.
+
   const razorpaySubscription = await razorpay.subscriptions.create({
     plan_id: planId,
     total_count: 12,
@@ -42,7 +45,6 @@ export async function createProSubscription(userId: string) {
     notes: { userId },
   });
 
-  // `pending` until Razorpay sends `subscription.activated` via webhook.
   await prisma.user.update({
     where: { id: userId },
     data: {
@@ -51,5 +53,7 @@ export async function createProSubscription(userId: string) {
     },
   });
 
-  return { subscriptionId: razorpaySubscription.id };
+  return {
+    subscriptionId: razorpaySubscription.id,
+  };
 }

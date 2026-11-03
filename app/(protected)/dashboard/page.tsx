@@ -1,11 +1,6 @@
-/**
- * Dashboard Overview page (`/dashboard`).
- *
- * Server component that loads aggregated overview data and renders stat cards
- * plus recent AI review activity.
- */
 
 import type { Metadata } from "next";
+import { Suspense } from "react";
 
 import { DashboardHeader } from "@/features/dashboard/components/dashboard-header";
 import { OverviewContent } from "@/features/dashboard/components/overview-content";
@@ -16,12 +11,24 @@ export const metadata: Metadata = {
   title: "Overview · Dashboard",
 };
 
-/**
- * Default dashboard landing page with summary stats and activity feed.
- *
- * @returns Overview header and content for the signed-in user.
- */
-export default async function DashboardOverviewPage() {
+function DashboardLoading() {
+  return (
+    <div className="space-y-6 animate-pulse">
+      <div className="h-8 w-48 rounded-md bg-muted" />
+      <div className="h-4 w-72 rounded-md bg-muted" />
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        {Array.from({ length: 4 }).map((_, index) => (
+          <div
+            key={index}
+            className="h-28 rounded-xl bg-muted"
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+async function DashboardOverviewContent() {
   const session = await requireAuth();
   const overview = await getOverview(session.user.id);
 
@@ -33,5 +40,13 @@ export default async function DashboardOverviewPage() {
       />
       <OverviewContent overview={overview} />
     </>
+  );
+}
+
+export default function DashboardOverviewPage() {
+  return (
+    <Suspense fallback={<DashboardLoading />}>
+      <DashboardOverviewContent />
+    </Suspense>
   );
 }
