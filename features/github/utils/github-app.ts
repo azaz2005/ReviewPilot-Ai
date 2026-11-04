@@ -1,30 +1,29 @@
-import {App} from "octokit";
 
-let githubApp:App | null = null;
+import { App } from "octokit";
 
+let githubApp: App | null = null;
 
-export function getGithubApp(){
-    if(!githubApp){
+export function getGithubApp() {
+    if (!githubApp) {
         githubApp = new App({
-            appId:process.env.GITHUB_APP_ID!,
+            appId: process.env.GITHUB_APP_ID!,
             privateKey: process.env.GITHUB_APP_PRIVATE_KEY!.replace(/\\n/g, "\n"),
-            webhooks:{
-                secret:process.env.GITHUB_WEBHOOK_SECRET!
+            webhooks: {
+                secret: process.env.GITHUB_WEBHOOK_SECRET!
             }
-        })
+        });
     }
 
     return githubApp;
 }
 
-
 export function getGithubInstallUrl(userId: string) {
-  const url = new URL(
-    "https://github.com/apps/pr-rev-azaz/installations/new"
-  );
+    const url = new URL(
+        "https://github.com/apps/reviewpilot-ai-by-azaz/installations/new"
+    );
 
-  // Preserve the user ID so the installation can be linked to this user.
-  url.searchParams.set("state", userId);
+    // Preserve the user ID so the installation can be linked to this user.
+    url.searchParams.set("state", userId);
 
-  return url.toString();
+    return url.toString();
 }
