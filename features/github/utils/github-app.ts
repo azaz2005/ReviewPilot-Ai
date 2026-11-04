@@ -22,7 +22,6 @@ export function getGithubInstallUrl(userId: string) {
         "https://github.com/apps/reviewpilot-ai-by-azaz/installations/new"
     );
 
-    // Preserve the user ID so the installation can be linked to this user.
     url.searchParams.set("state", userId);
 
     return url.toString();
