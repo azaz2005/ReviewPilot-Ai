@@ -1,6 +1,8 @@
-import React from 'react'
+
+import React, { Suspense } from "react";
 import Image from "next/image";
-import type { Metadata } from 'next';
+import type { Metadata } from "next";
+
 import {
   Card,
   CardContent,
@@ -8,50 +10,61 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+
 import {
   Field,
   FieldDescription,
   FieldGroup,
   FieldSet,
 } from "@/components/ui/field";
-import { GithubSignInForm } from '@/features/auth/components/github-sign-in-form';
 
+import { GithubSignInForm } from "@/features/auth/components/github-sign-in-form";
 
 export const metadata: Metadata = {
   title: "Sign in",
-  description: "Sign in to Chai AI Code Reviewer with your GitHub account.",
+  description: "Sign in to ReviewPilot AI with your GitHub account.",
 };
 
 type SignInPageProps = {
-  searchParams: Promise<{ callbackUrl?: string }>;
+  searchParams: Promise<{
+    callbackUrl?: string;
+  }>;
 };
 
-
-const SignInPage = async({searchParams}:SignInPageProps) => {
-    const {callbackUrl} = await searchParams;
+function SignInContent({
+  callbackUrl,
+}: {
+  callbackUrl?: string;
+}) {
   return (
-     <Card className="border-border/80 shadow-sm">
+    <Card className="border-border/80 shadow-sm">
       <CardHeader className="items-center text-center">
         <div className="mb-6 flex justify-center pt-2">
           <Image
             src="/reviewpilot-ai.svg"
-            alt="Chai AI Code Reviewer"
+            alt="ReviewPilot AI"
             width={172}
             height={172}
             priority
-            className="text-foreground"
+            className="h-auto w-auto max-w-full"
           />
         </div>
-        <CardTitle className="text-base">Welcome back</CardTitle>
+
+        <CardTitle className="text-base">
+          Welcome back
+        </CardTitle>
+
         <CardDescription>
           Sign in with GitHub to review and manage your code.
         </CardDescription>
       </CardHeader>
+
       <CardContent>
         <FieldSet>
           <FieldGroup>
             <Field>
               <GithubSignInForm callbackUrl={callbackUrl} />
+
               <FieldDescription className="text-center">
                 We only request the permissions needed to identify your
                 account. You can revoke access anytime from GitHub settings.
@@ -61,7 +74,29 @@ const SignInPage = async({searchParams}:SignInPageProps) => {
         </FieldSet>
       </CardContent>
     </Card>
-  )
+  );
 }
 
-export default SignInPage
+async function SignInPageContent({
+  searchParams,
+}: SignInPageProps) {
+  const { callbackUrl } = await searchParams;
+
+  return <SignInContent callbackUrl={callbackUrl} />;
+}
+
+export default function SignInPage(props: SignInPageProps) {
+  return (
+    <Suspense
+      fallback={
+        <Card className="border-border/80 shadow-sm">
+          <CardHeader className="items-center text-center">
+            <CardTitle>Loading sign in...</CardTitle>
+          </CardHeader>
+        </Card>
+      }
+    >
+      <SignInPageContent {...props} />
+    </Suspense>
+  );
+}
